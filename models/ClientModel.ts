@@ -13,8 +13,10 @@ class ClientModel extends Client implements IModel {
 			const res: QueryResult = await db.query("INSERT INTO Client(username, passwd) VALUES($1, $2)",
 			[this.username, this.passwd]);
 			return res;
-		}catch(err: any){
-			return new Error(err.stack);
+		}catch(err: unknown){
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on insert operation");
 		}
 	}
 
@@ -23,12 +25,14 @@ class ClientModel extends Client implements IModel {
 			const res: QueryResult = await db.query("SELECT * FROM Client WHERE id=$1",
 			[this.id]);
 			return res;
-		}catch(err: any){
-			return new Error(err.stack);
+		}catch(err: unknown){
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on select operation");
 		}
 	}
 
-	async update(field: string, newValue: any): Promise<QueryResult | Error> {
+	async update(field: string, newValue: string): Promise<QueryResult | Error> {
 		let query = "";
 
 		if(!(await this.itExists())){
@@ -47,7 +51,9 @@ class ClientModel extends Client implements IModel {
 			const res: QueryResult = await db.query(query, [newValue, this.id]);
 			return res;
 		}catch(err: any){
-			return new Error(err.stack);
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on update operation");
 		}
 	}
 
@@ -61,7 +67,9 @@ class ClientModel extends Client implements IModel {
 			[this.id]);
 			return res;
 		}catch(err: any){
-			return new Error(err.stack);
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on delete operation");
 		}
 	}
 

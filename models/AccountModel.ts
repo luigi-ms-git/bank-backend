@@ -13,8 +13,10 @@ class AccountModel extends Account implements IModel {
 			const res: QueryResult = await db.query("INSERT INTO Account(money) VALUES($1)",
 			[this.money]);
 			return res;
-		}catch(err: any){
-			return new Error(err.stack);
+		}catch(err: unknown){
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on insert operation");
 		}
 	}
 
@@ -23,12 +25,14 @@ class AccountModel extends Account implements IModel {
 			const res: QueryResult = await db.query("SELECT * FROM Account WHERE id=$1",
 			[this.id]);
 			return res;
-		}catch(err: any){
-			return new Error(err.stack);
+		}catch(err: unknown){
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on select operation");
 		}
 	}
 
-	async update(field: string, newValue: any): Promise<QueryResult | Error> {
+	async update(field: string, newValue: number): Promise<QueryResult | Error> {
 		let query = "";
 
 		if(!(await this.itExists())){
@@ -44,8 +48,10 @@ class AccountModel extends Account implements IModel {
 		try{
 			const res: QueryResult = await db.query(query, [newValue, this.id]);
 			return res;
-		}catch(err: any){
-			return new Error(err.stack);
+		}catch(err: unknown){
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on update operation");
 		}
 	}
 
@@ -58,12 +64,14 @@ class AccountModel extends Account implements IModel {
 			const res: QueryResult = await db.query("DELETE FROM Account WHERE id=$1",
 			[this.id]);
 			return res;
-		}catch(err: any){
-			return new Error(err.stack);
+		}catch(err: unknown){
+			return (err instanceof Error)
+				? new Error(err.stack)
+				: new Error("Error on delete operation");
 		}
 	}
 
-	async itExists(): Promise<any> {
+	async itExists(): Promise<boolean> {
 		const found = await this.select();
 		return found ? true : false;
 	}
