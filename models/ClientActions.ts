@@ -28,7 +28,7 @@ class ClientActions {
 			: Promise.reject(new Error("Error on select client"));
 	}
 
-	static async updateOneField(clientID: number, field: string, newValue: any): Promise<QueryResult | Error> {
+	static async updateOneField(clientID: number, field: string, newValue: string): Promise<QueryResult | Error> {
 		const client = new ClientModel();
 
 		client.id = clientID;

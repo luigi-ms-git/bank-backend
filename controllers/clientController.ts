@@ -5,26 +5,34 @@ const client: Router = express.Router();
 
 client.get('/client/:id', (req: Request, res: Response) => {
 	const id: string = req.params.id;
+
+	ClientActions.getClient(parseInt(id))
+		.then(resolved => res.json({ resolved }))
+		.catch(rejected => res.status(400).json({ rejected }));
 });
 
-client.post('/signin/', (req: Request, res: Response) => {
-	const { id, passwd } = req.body;
-});
-
-client.post('/signup/', (req: Request, res: Response) => {
+client.post('/signup/', (req: Request<{ username: string, passwd: string}>, res: Response) => {
 	const { username, passwd } = req.body;
 
 	ClientActions.createClient(username, passwd)
-		.then(res => res.json({ res }))
-		.catch(rej => res.status(400).json({ rej }));
+		.then(resolved => res.json({ resolved }))
+		.catch(rejected => res.status(400).json({ rejected }));
 });
 
-client.put('/client/', (req: Request, res: Response) => {
+client.put('/client/', (req: Request<{ id: string, field: string, newData: string}>, res: Response) => {
 	const { id, field, newData } = req.body;
+
+	ClientActions.updateOneField(parseInt(id), field, newData)
+		.then(resolved => res.json({ resolved }))
+		.catch(rejected => res.status(400).json({ rejected }));		
 });
 
 client.delete('/client/', (req: Request, res: Response) => {
 	const id: number = req.body;
+
+	ClientActions.deleteClient(id)
+		.then(resolved => res.json({ resolved }))
+		.catch(rejected => res.status(400).json({ rejected }));
 });
 
-export { client };
+export default client;
