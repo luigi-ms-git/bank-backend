@@ -1,9 +1,9 @@
 import { QueryResult } from 'pg';
-import ClientModel from './ClientModel';
+import Client from '../models/Client';
 
 class ClientActions {
 	static async createClient(username: string, passwd: string): Promise<QueryResult | Error> {
-		const client = new ClientModel();
+		const client = new Client();
 
 		client.username = username;
 		client.passwd = passwd;
@@ -17,7 +17,7 @@ class ClientActions {
 	}
 
 	static async getClient(clientID: number): Promise<QueryResult | Error> {
-		const client = new ClientModel();
+		const client = new Client();
 
 		client.id = clientID;
 
@@ -29,7 +29,7 @@ class ClientActions {
 	}
 
 	static async updateOneField(clientID: number, field: string, newValue: string): Promise<QueryResult | Error> {
-		const client = new ClientModel();
+		const client = new Client();
 
 		client.id = clientID;
 
@@ -42,7 +42,7 @@ class ClientActions {
 	}
 
 	static async deleteClient(clientID: number): Promise<QueryResult | Error> {
-		const client = new ClientModel();
+		const client = new Client();
 
 		client.id = clientID;
 

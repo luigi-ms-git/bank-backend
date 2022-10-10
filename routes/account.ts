@@ -1,5 +1,5 @@
 import express, { Router, Request, Response } from 'express';
-import AccountActions from '../models/AccountActions';
+import AccountActions from '../actions/AccountActions';
 
 const account: Router = express.Router();
 
@@ -35,4 +35,4 @@ account.delete('/account', (req: Request, res: Response) => {
 		.catch(rejected => res.status(400).json({ rejected }));
 });
 
-export { account };
+export default account;

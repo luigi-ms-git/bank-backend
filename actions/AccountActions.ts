@@ -1,9 +1,9 @@
 import { QueryResult } from 'pg';
-import AccountModel from './AccountModel';
+import Account from '../models/Account';
 
 class AccountActions {
 	static async createAccount(money: number): Promise<QueryResult | Error> {
-		const account = new AccountModel();
+		const account = new Account();
 
 		account.money = money;
 
@@ -16,7 +16,7 @@ class AccountActions {
 	}
 
 	static async getAccount(accountID: number): Promise<QueryResult | Error> {
-		const account = new AccountModel();
+		const account = new Account();
 
 		account.id = accountID;
 
@@ -28,7 +28,7 @@ class AccountActions {
 	}
 
 	static async updateOneField(accountID: number, field: string, newValue: number): Promise<QueryResult | Error> {
-		const account = new AccountModel();
+		const account = new Account();
 
 		account.id = accountID;
 
@@ -41,7 +41,7 @@ class AccountActions {
 	}
 
 	static async deleteAccount(accountID: number): Promise<QueryResult | Error> {
-		const account = new AccountModel();
+		const account = new Account();
 
 		account.id = accountID;
 
