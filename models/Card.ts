@@ -7,12 +7,50 @@ class Card extends CardDAO {
 	private _account: Account;
 	private _id: number;
 	private _password: number;
+	private _isBlocked: boolean;
 
-	constructor(cli: Client, acc: Account, passwd: number){
+	constructor(cli: Client, acc: Account){
 		this._client = cli;
 		this._account = acc;
 		this._id = 0;
-		this._password = passwd;
+		this._password = 0;
+		this._isBlocked = false;
+	}
+
+	public getData(){
+		return (this.isBlocked === false)
+			? {
+				id: this.id,
+				passwd: this.password,
+				is_blocked: this.isBlocked
+			}
+			: { error: "Card blocked" };
+	}
+
+	public getFullData(){
+		return (this.isBlocked === false)
+			? {
+				id: this.id,
+				passwd: this.password,
+				is_blocked: this.isBlocked,
+				client: {
+					client_id: this.client.id,
+					client_name: this.client.username
+				},
+				account: {
+					account_money: this.account.money,
+					account_limit: this.account.limit
+				}
+			: { error: "Card blocked" };
+		};
+	}
+
+	public hasThisClient(clientId: number): boolean {
+		return this.client.id === clientId;
+	}
+
+	public hasThisAccount(accountId: number): boolean {
+		return this.account.id === accountId;
 	}
 
 	public get client(): Client {
@@ -45,6 +83,14 @@ class Card extends CardDAO {
 
 	public set password(newPasswd: number){
 		this._password = newPasswd;
+	}
+
+	public get isBlocked(): boolean {
+		return this._isBlocked;
+	}
+
+	public set isBlocked(newIsBlocked: boolean){
+		this._isBlocked = newIsBlocked;
 	}
 }
 

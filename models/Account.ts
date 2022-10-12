@@ -7,20 +7,43 @@ class Account extends AccountDAO {
 	private _money: number;
 	private _limit: number;
 	private _client: Client;
-	private _cards: Array<Card>;
+	private _card: Card;
 
-	constructor(money: number){
+	constructor(money: number, cli: Client){
 		this._id = 0;
 		this._money = money;
 		this._limit = 0.00;
-		this._client = new Client();
-		this._cards = [];
+		this._client = cli;
+		this._card = new Card(cli, this);
 	}
 
-	public transferTo(anotherAccount: Account, amount: number): void {
-		this.money -= amount;
+	public getData(){
+		return {
+			id: this.id,
+			money: this.money,
+			limit: this.limit
+		};
+	}
 
-		anotherAccount.money += amount;
+	public getFullData(){
+		return {
+			id: this.id,
+			money: this.money,
+			limit: this.limit,
+			client: {
+				client_id: this.client.id,
+				client_name: this.client.username
+			},
+			card: this.card.getData()
+		};
+	}
+
+	public hasThisClient(clientId: number): boolean {
+		return this.client.id === clientId;
+	}
+
+	public hasThisCard(cardId: number): boolean {
+		return (this.card.id === cardId) && (this.card.isBlocked === false);
 	}
 
 	public deposit(amount: number): void {
@@ -36,15 +59,12 @@ class Account extends AccountDAO {
 		}
 	}
 
-	public createCard(): void {
-		const card = new Card(this.client, this);
-		this.cards.push(card);
+	public createCard(cli: Client): void {
+		this.card = new Card(cli, this);
 	}
 
 	public blockCard(cardId: number): void {
-		this.cards = this.cards.filter(c => {
-			return c.id !== cardId;
-		});
+		this.card.isBlocked = true;
 	}
 
 	public isClientCorrect(clientId: number, clientPasswd: number): boolean {
@@ -54,16 +74,11 @@ class Account extends AccountDAO {
 		return (isIdCorrect && isPasswordCorrect);
 	}
 
-	public isCardCorrect(cardId: number, cardPasswd): boolean {
-		let isCorrect = false;
+	public isCardCorrect(cardId: number, cardPasswd: number): boolean {
+		const isIdCorrect = (this.card.id === cardId);
+		const idPasswordCorrect = (this.card.password === cardPasswd);
 
-		for(let c in this.cards){
-			if(c.id === cardId && c.password === cardPasswd){
-				isCorrect = true;
-			}
-		}
-
-		return isCorrect;
+		return (isIdCorrect && isPasswordCorrect);
 	}
 
 	public get id(): number {
@@ -98,8 +113,8 @@ class Account extends AccountDAO {
 		this._client = newClient;
 	}
 
-	public get cards(): Array<Card> {
-		return this._cards;
+	public get card(): Card {
+		return this._card;
 	}
 }
 

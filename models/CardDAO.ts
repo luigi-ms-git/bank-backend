@@ -4,7 +4,7 @@ import IModel from './IModel';
 
 enum Query {
 	INSERT = "INSERT INTO Cards(id, passwd) VALUES($1, $2)",
-	SELECT = "SELECT * FROM Cards WHERE id = $1",
+	SELECT = "SELECT account_id, client_id FROM Cards WHERE id = $1",
 	UPDATE = "UPDATE Cards SET $0 = $1 WHERE id = $2",
 	DELETE = "DELETE FROM Cards WHERE id = $1"
 }

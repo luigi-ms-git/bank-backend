@@ -6,36 +6,47 @@ class Client extends ClientDAO {
 	private _id: number;
 	private _username: string;
 	private _passwd: number;
-	private _accounts: Array<Account>;
-	private _cards: Array<Card>;
+	private _account: Account;
+	private _card: Card;
 
-	constructor(id: number, username: string, passwd: number){
-		this._id = id;
+	constructor(username: string, passwd: number){
+		this._id = 0;
 		this._username = username;
 		this._passwd = passwd;
-		this._accounts = [new Account(0)];
-		this._cards = [];
+		this._account = new Account(0, this);
+		this._card = new Card(this, this._account);
 	}
 
-	public createAccount(acc: Account): Account {
-		this.accounts.push(acc);
-		return acc;
+	public getData(){
+		return {
+			id: this.id,
+			name: this.username,
+			account: this.account.getData(),
+			card: this.card.getData()
+		};
 	}
 
-	public requestCard(acc: Account): Card {
-		const card = new Card(this, acc);
-
-		this.cards.push(card);
-
-		return card;
+	public hasThisAccount(accountId: number): boolean {
+		return this.account.id === accountId;
 	}
 
-	public blockCard(cardId: number): void {
-		this.cards = this.cards.filter(c => {
-			return c.id !== cardId;
-		});
+	public hasThisCard(cardId: number): boolean {
+		return (this.card.id === cardId) && (this.card.isBlocked === false);
+	}
 
-		this.accounts.forEach(a => a.blockCard(cardId));
+	public createAccount(money: number): void {
+		this.account.money = money;
+		this.account.id = this.id;
+	}
+
+	public addCard(): void {
+		this.card = new Card(this, this.account);
+		this.account.createCard(this);
+	}
+
+	public blockCard(): void {
+		this.card.isBlocked = true;
+		this.account.blockCard();
 	}
 
 	public get id(): number {
@@ -62,12 +73,12 @@ class Client extends ClientDAO {
 		this._passwd = newPasswd;
 	}
 
-	public get accounts(): Array<Account> {
-		return this._accounts;
+	public get account(): Account {
+		return this._account;
 	}
 
-	public get cards(): Array<Card> {
-		return this._cards;
+	public get card(): Card {
+		return this._card;
 	}
 }
 

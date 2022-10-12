@@ -2,11 +2,8 @@ import { QueryResult } from 'pg';
 import Client from '../models/Client';
 
 class ClientActions {
-	static async createClient(username: string, passwd: string): Promise<QueryResult | Error> {
-		const client = new Client();
-
-		client.username = username;
-		client.passwd = passwd;
+	static async createClient(id: number, username: string, passwd: string): Promise<QueryResult | Error> {
+		const client = new Client(id, username, passwd);
 
 		try{
 			const data = await client.insert();
