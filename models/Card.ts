@@ -6,13 +6,16 @@ class Card extends CardDAO {
 	private _client: Client;
 	private _account: Account;
 	private _id: number;
+	private _cvc: number;
 	private _password: number;
 	private _isBlocked: boolean;
 
 	constructor(cli: Client, acc: Account){
+		super();
 		this._client = cli;
 		this._account = acc;
 		this._id = 0;
+		this._cvc = 0
 		this._password = 0;
 		this._isBlocked = false;
 	}
@@ -21,6 +24,7 @@ class Card extends CardDAO {
 		return (this.isBlocked === false)
 			? {
 				id: this.id,
+				cvc: this.cvc,
 				passwd: this.password,
 				is_blocked: this.isBlocked
 			}
@@ -31,22 +35,22 @@ class Card extends CardDAO {
 		return (this.isBlocked === false)
 			? {
 				id: this.id,
+				cvc: this.cvc,
 				passwd: this.password,
 				is_blocked: this.isBlocked,
 				client: {
-					client_id: this.client.id,
+					client_id: this.client.cpf,
 					client_name: this.client.username
 				},
 				account: {
 					account_money: this.account.money,
 					account_limit: this.account.limit
-				}
+				}}
 			: { error: "Card blocked" };
-		};
 	}
 
 	public hasThisClient(clientId: number): boolean {
-		return this.client.id === clientId;
+		return this.client.cpf === clientId;
 	}
 
 	public hasThisAccount(accountId: number): boolean {
@@ -75,6 +79,14 @@ class Card extends CardDAO {
 
 	public set id(newID: number){
 		this._id = newID;
+	}
+
+	public get cvc(): number {
+		return this._cvc;
+	}
+
+	public set cvc(newCVC: number){
+		this._cvc = newCVC;
 	}
 
 	public get password(): number {

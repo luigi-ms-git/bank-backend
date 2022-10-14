@@ -10,6 +10,7 @@ class Account extends AccountDAO {
 	private _card: Card;
 
 	constructor(money: number, cli: Client){
+		super();
 		this._id = 0;
 		this._money = money;
 		this._limit = 0.00;
@@ -31,7 +32,7 @@ class Account extends AccountDAO {
 			money: this.money,
 			limit: this.limit,
 			client: {
-				client_id: this.client.id,
+				client_id: this.client.cpf,
 				client_name: this.client.username
 			},
 			card: this.card.getData()
@@ -39,7 +40,7 @@ class Account extends AccountDAO {
 	}
 
 	public hasThisClient(clientId: number): boolean {
-		return this.client.id === clientId;
+		return this.client.cpf === clientId;
 	}
 
 	public hasThisCard(cardId: number): boolean {
@@ -68,15 +69,15 @@ class Account extends AccountDAO {
 	}
 
 	public isClientCorrect(clientId: number, clientPasswd: number): boolean {
-		const isIdCorrect = (this.client.id === clientId);
-		const idPasswordCorrect = (this.client.passwd === clientPasswd);
+		const isCPFCorrect = (this.client.cpf === clientId);
+		const isPasswordCorrect = (this.client.passwd === clientPasswd);
 
-		return (isIdCorrect && isPasswordCorrect);
+		return (isCPFCorrect && isPasswordCorrect);
 	}
 
 	public isCardCorrect(cardId: number, cardPasswd: number): boolean {
 		const isIdCorrect = (this.card.id === cardId);
-		const idPasswordCorrect = (this.card.password === cardPasswd);
+		const isPasswordCorrect = (this.card.password === cardPasswd);
 
 		return (isIdCorrect && isPasswordCorrect);
 	}
@@ -115,6 +116,10 @@ class Account extends AccountDAO {
 
 	public get card(): Card {
 		return this._card;
+	}
+
+	public set card(newCard: Card){
+		this._card = newCard;
 	}
 }
 

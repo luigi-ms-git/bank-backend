@@ -3,37 +3,47 @@ import db from './database';
 import IModel from './IModel';
 
 enum Query {
-	INSERT = "INSERT INTO Clients(username, passwd) VALUES($1, $2)",
-	SELECT = "SELECT * FROM Clients WHERE id = $1",
-	UPDATE = "UPDATE Clients SET $0 = $1 WHERE id = $2",
-	DELETE = "DELETE FROM Clients WHERE id = $1"
+	INSERT = "INSERT INTO Clients(cpf, user_name, passwd) VALUES($1, $2)",
+	SELECT = "SELECT * FROM Clients WHERE cpf = $1",
+	SELECT_BY_NAME = "SELECT * FROM Clients WHERE user_name = $1",
+	UPDATE = "UPDATE Clients SET $0 = $1 WHERE cpf = $2",
+	DELETE = "DELETE FROM Clients WHERE cpf = $1"
 }
 
 class ClientDAO implements IModel {
-	async insert(username: string, passwd: number): Promise<QueryResult | Error> {
-		if((await this.itExists())){
+	async insert(cpf: number, username: string, passwd: number): Promise<QueryResult | Error> {
+		if((await this.itExists(username))){
 			return new Error("This client already exist");
 		}
 
 		const res: QueryResult = await db.query(Query.INSERT,
-			[username, passwd]);
+			[cpf, username, passwd]);
 		
 		return res;
 	}
 
-	async select(id: number): Promise<QueryResult | Error> {
+	async select(cpf: number): Promise<QueryResult | Error> {
 		const res: QueryResult = await db.query(Query.SELECT,
-			[id]);
+			[cpf]);
 
 		return (res.rowCount > 0)
 			? res
 			: new Error("This client doesnt exist");
 	}
 
-	async update(id: number, field: string, newValue: string): Promise<QueryResult | Error> {
+	async searchBy(name: string): Promise<QueryResult | Error> {
+		const res: QueryResult = await db.query(Query.SELECT_BY_NAME,
+			[name]);
+
+		return (res.rowCount > 0)
+			? res
+			: new Error("This client doesnt exist");	
+	}
+
+	async update(cpf: number, field: string, newValue: string): Promise<QueryResult | Error> {
 		let query = "";
 
-		if(!(await this.itExists())){
+		if(!(await this.itExists(cpf))){
 			return new Error("This client does not exist");
 		}
 		
@@ -46,24 +56,29 @@ class ClientDAO implements IModel {
 		}
 
 		const res: QueryResult = await db.query(query,
-			[newValue, id]);
+			[newValue, cpf]);
 
 		return res;
 	}
 
-	async remove(id: number): Promise<QueryResult | Error> {
-		if((await this.itExists()) === false){
+	async remove(cpf: number): Promise<QueryResult | Error> {
+		if((await this.itExists(cpf)) === false){
 			return new Error("This client does not exist");
 		}
 
 		const res: QueryResult = await db.query(Query.DELETE,
-			[id]);
+			[cpf]);
 
 		return res;
 	}
 
-	async itExists(): Promise<boolean> {
-		const found = await this.select();
+	async itExists(param: number | string): Promise<boolean> {
+		let found: any;
+		if(typeof param === 'number'){
+			found = await this.select(param);
+		}else if(typeof param === 'string'){
+			found = await this.searchBy(param);
+		}
 
 		return ((found instanceof Error) === false);
 	} 

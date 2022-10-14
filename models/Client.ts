@@ -3,15 +3,16 @@ import Card from './Card';
 import ClientDAO from './ClientDAO';
 
 class Client extends ClientDAO {
-	private _id: number;
+	private _cpf: number;
 	private _username: string;
 	private _passwd: number;
 	private _account: Account;
 	private _card: Card;
 
-	constructor(username: string, passwd: number){
-		this._id = 0;
-		this._username = username;
+	constructor(cpf: number, passwd: number){
+		super();
+		this._cpf = cpf;
+		this._username = "";
 		this._passwd = passwd;
 		this._account = new Account(0, this);
 		this._card = new Card(this, this._account);
@@ -19,7 +20,7 @@ class Client extends ClientDAO {
 
 	public getData(){
 		return {
-			id: this.id,
+			cpf: this.cpf,
 			name: this.username,
 			account: this.account.getData(),
 			card: this.card.getData()
@@ -36,7 +37,7 @@ class Client extends ClientDAO {
 
 	public createAccount(money: number): void {
 		this.account.money = money;
-		this.account.id = this.id;
+		this.account.id = this.cpf;
 	}
 
 	public addCard(): void {
@@ -46,15 +47,15 @@ class Client extends ClientDAO {
 
 	public blockCard(): void {
 		this.card.isBlocked = true;
-		this.account.blockCard();
+		this.account.blockCard(this.card.id);
 	}
 
-	public get id(): number {
-		return this._id;
+	public get cpf(): number {
+		return this._cpf;
 	}
 
-	public set id(newID: number){
-		this._id = newID;
+	public set cpf(newCPF: number){
+		this._cpf = newCPF;
 	}
 
 	public get username(): string {
@@ -79,6 +80,10 @@ class Client extends ClientDAO {
 
 	public get card(): Card {
 		return this._card;
+	}
+
+	public set card(newCard: Card){
+		this._card = newCard;
 	}
 }
 

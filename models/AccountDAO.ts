@@ -3,22 +3,26 @@ import db from './database';
 import IModel from './IModel';
 
 enum Query {
-	INSERT = "INSERT INTO Accounts(money) VALUES($1)",
+	INSERT = "INSERT INTO Accounts(money, client_id) VALUES($1)",
 	SELECT = "SELECT * FROM Accounts WHERE id = $1",
+	SELECT_BY_FK = "SELECT * FROM Accounts WHERE client_id = $1",
 	UPDATE = "UPDATE Accounts SET $0 = $1 WHERE id = $2",
 	DELETE = "DELETE FROM Accounts WHERE id=$1"
 }
 
 class AccountDAO implements IModel {
-	async insert(money: number): Promise<QueryResult | Error> {
-		if((await this.itExists())){
-			return new Error("This client already exist");
+	//Este metodo é chamado apos a criação do cliente
+	//não havendo necessidade de verificar se o cliente existe 
+	//ou não.
+	async insert(money: number, clientId: number): Promise<QueryResult | Error> {
+		try{
+			const res: QueryResult = await db.query(Query.INSERT,
+				[money, clientId]);
+
+			return res;
+		}catch(err: unknown){
+			return new Error("Error adding Account");
 		}
-
-		const res: QueryResult = await db.query(Query.INSERT,
-			[money]);
-
-		return res;
 	}
 
 	async select(id: number): Promise<QueryResult | Error> {
@@ -30,10 +34,19 @@ class AccountDAO implements IModel {
 			: new Error("This Account doesnt exist");
 	}
 
+	async searchBy(clientId: number): Promise<QueryResult | Error> {
+		const res: QueryResult = await db.query(Query.SELECT_BY_FK,
+			[clientId]);
+
+		return (res.rowCount > 0)
+			? res
+			: new Error("This Account doesnt exist");
+	}
+
 	async update(id: number, field: string, newValue: number): Promise<QueryResult | Error> {
 		let query = "";
 
-		if((await this.itExists()) === false){
+		if((await this.itExists(id)) === false){
 			return new Error("This account does not exist");
 		}
 
@@ -50,7 +63,7 @@ class AccountDAO implements IModel {
 	}
 
 	async remove(id: number): Promise<QueryResult | Error> {
-		if((await this.itExists()) === false){
+		if((await this.itExists(id)) === false){
 			return new Error("This account does not exist");
 		}
 
@@ -60,10 +73,12 @@ class AccountDAO implements IModel {
 		return res;
 	}
 
-	async itExists(): Promise<boolean> {
-		const found = await this.select();
+	async itExists(param: number): Promise<boolean> {
+		const found = await this.select(param);
+		const foundToo = await this.searchBy(param);
 
-		return ((found instanceof Error) === false);
+		return ((found instanceof Error) === false)
+			&& ((foundToo instanceof Error) === false);
 	}
 }
 

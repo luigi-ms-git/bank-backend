@@ -1,9 +1,12 @@
+import { QueryResult } from 'pg';
+
 interface IModel {
-	insert(): Promise<any>;
-	select(): Promise<any>;
-	update(field: string, newValue: any): Promise<any>;
-	remove(): Promise<any>;
-	itExists(): Promise<any>;
+	insert(a?: any, b?: any, c?: any): Promise<QueryResult | Error>;
+	select(a?: number): Promise<QueryResult | Error>;
+	searchBy(a?: number | string): Promise<QueryResult | Error>;
+	update(a?: number, b?: string, c?: any): Promise<QueryResult | Error>;
+	remove(a?: number): Promise<QueryResult | Error>;
+	itExists(a?: any): Promise<boolean>;
 }
 
 export default IModel;

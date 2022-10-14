@@ -4,7 +4,7 @@ class Transfer {
 	private _accountOrigin: Account;
 	private _accountReceiver: Account;
 	private _money: number;
-	private _tansferStatus: string;
+	private _transferStatus: string;
 
 	constructor(accOrigin: Account, accReceiver: Account){
 		this._accountOrigin = accOrigin;
@@ -24,7 +24,7 @@ class Transfer {
 
 	public send(money: number): void {
 		this.accountOrigin.money -= money;
-		this.accountReceiver += money;
+		this.accountReceiver.money += money;
 
 		this.transferStatus = "Finished";
 	}
@@ -53,7 +53,7 @@ class Transfer {
 		return this._money;
 	}
 
-	private set money(newMoney: Account){
+	private set money(newMoney: number){
 		this._money = newMoney;
 	}
 
@@ -61,7 +61,7 @@ class Transfer {
 		return this._transferStatus;
 	}
 
-	private set transferStatus(newTransferStatus: Account){
+	private set transferStatus(newTransferStatus: string){
 		this._transferStatus = newTransferStatus;
 	}
 }
