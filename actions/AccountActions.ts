@@ -1,56 +1,30 @@
-import { QueryResult } from 'pg';
 import Account from '../models/Account';
+import Client from '../models/Client';
 
 class AccountActions {
-	static async createAccount(money: number): Promise<QueryResult | Error> {
-		const account = new Account();
+	static async pushAccount(money: number, clientCPF: number): Promise<Array<any>> {
+		const cli = new Client(clientCPF, 0);
+		const acc = new Account(money, cli);	
+		
+		const data = await acc.push();
 
-		account.money = money;
-
-		try{
-			const data = await account.insert();
-			return Promise.resolve(data);
-		}catch(err){
-			return Promise.reject(err);
+		if(data instanceof Error){
+			return Promise.reject([new Error(data.message), 400]);
+		}else{
+			return Promise.resolve([acc.getFullData(), 201]);
 		}
 	}
 
-	static async getAccount(accountID: number): Promise<QueryResult | Error> {
-		const account = new Account();
-
-		account.id = accountID;
-
-		const data = await account.select();
-
-		return (data)
-			? Promise.resolve(data)
-			: Promise.reject(new Error("Error on select account"));
+	static async pullAccount(accountID: number): Promise<Array<any>> {
+	
 	}
 
-	static async updateOneField(accountID: number, field: string, newValue: number): Promise<QueryResult | Error> {
-		const account = new Account();
-
-		account.id = accountID;
-
-		try{
-			const data = await account.update(field, newValue);
-			return Promise.resolve(data);
-		}catch(err){
-			return Promise.reject(err);
-		}
+	static async modify(accountID: number, field: string, newValue: number): Promise<Array<any>> {
+		
 	}
 
-	static async deleteAccount(accountID: number): Promise<QueryResult | Error> {
-		const account = new Account();
-
-		account.id = accountID;
-
-		try{
-			const data = await account.remove();
-			return Promise.resolve(data);
-		}catch(err){
-			return Promise.reject(err);
-		}
+	static async destroy(accountID: number): Promise<Array<any>> {
+		
 	}
 }
 

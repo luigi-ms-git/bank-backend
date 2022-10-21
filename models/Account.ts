@@ -39,14 +39,6 @@ class Account extends AccountDAO {
 		};
 	}
 
-	public hasThisClient(clientId: number): boolean {
-		return this.client.cpf === clientId;
-	}
-
-	public hasThisCard(cardId: number): boolean {
-		return (this.card.id === cardId) && (this.card.isBlocked === false);
-	}
-
 	public deposit(amount: number): void {
 		this.money += amount;
 	}
@@ -66,6 +58,33 @@ class Account extends AccountDAO {
 
 	public blockCard(cardId: number): void {
 		this.card.isBlocked = true;
+	}
+
+	public push() {
+		return super.insert(this.money, this.client.cpf);
+	} 
+
+	public pull() {
+		return super.select(this.id);
+	}
+
+	public modify(field: string, value: number) {
+		return super.update(this.id, field, value);
+	}
+
+	public destroy() {
+		return super.remove(this.id);
+	}
+
+	public pullClient() {
+		return super.searchBy(this.client.cpf);
+	}
+	public hasThisClient(clientId: number): boolean {
+		return this.client.cpf === clientId;
+	}
+
+	public hasThisCard(cardId: number): boolean {
+		return (this.card.id === cardId) && (this.card.isBlocked === false);
 	}
 
 	public isClientCorrect(clientId: number, clientPasswd: number): boolean {

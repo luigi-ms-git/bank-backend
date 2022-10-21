@@ -47,9 +47,7 @@ class ClientDAO implements IModel {
 			return new Error("This client does not exist");
 		}
 		
-		if((field !== "username") && (field !== "passwd")){
-			return new Error("Unable to update");
-		}else if(field === 'username'){
+		if(field === 'username'){
 			query = Query.UPDATE.replace(/\$0/, "username");
 		}else if(field === 'passwd'){
 			query = Query.UPDATE.replace(/\$0/, "passwd");
